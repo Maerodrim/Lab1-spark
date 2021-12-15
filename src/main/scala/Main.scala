@@ -1,10 +1,11 @@
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.lang.Math._
-
 import org.apache.spark._
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
+
+import java.util.Locale
 
 
 object Main {
@@ -14,45 +15,45 @@ object Main {
     val cfg = new SparkConf().setAppName("Test").setMaster("local[2]")
     val sc = new SparkContext(cfg)
 
-    val tripsData = sc.textFile("G://data/trips.csv")
+    val tripsData = sc.textFile("K://BIGData//big_data-master//data/trips.csv")
     val trips = tripsData.map(row => row.split(",", -1))
 
-    val stationData = sc.textFile("G://data/stations.csv")
+    val stationData = sc.textFile("K://BIGData//big_data-master//data/stations.csv")
     val stations = stationData.map(row => row.split(",", -1))
 
-    val stationsIndexed = stations.keyBy(row => row(0).toInt)
+    //    val stationsIndexed = stations.keyBy(row => row(0).toInt)
+    //
+    //    stationsIndexed.foreach(x => {
+    //      print(x._1)
+    //      x._2.foreach(y => {
+    //        print(" ")
+    //        print(y)
+    //      })
+    //      println
+    //    })
 
-    stationsIndexed.foreach(x => {
-      print(x._1)
-      x._2.foreach(y => {
-        print(" ")
-        print(y)
-      })
-      println
-    })
-
-    val tripsByStartTerminals = trips.keyBy(row => row(4).toInt)
-
-    tripsByStartTerminals.take(50).foreach(x => {
-      print(x._1)
-      x._2.foreach(y => {
-        print(" ")
-        print(y)
-      })
-      println
-    })
-
-    val tripsByEndTerminals = trips.keyBy(row => row(7).toInt)
-
-    tripsByEndTerminals.take(50).foreach(x => {
-      print(x._1)
-      x._2.foreach(y => {
-        print(" ")
-        print(y)
-      })
-      println
-    })
-
+    //    val tripsByStartTerminals = trips.keyBy(row => row(4).toInt)
+    //
+    //    tripsByStartTerminals.take(50).foreach(x => {
+    //      print(x._1)
+    //      x._2.foreach(y => {
+    //        print(" ")
+    //        print(y)
+    //      })
+    //      println
+    //    })
+    //
+    //    val tripsByEndTerminals = trips.keyBy(row => row(7).toInt)
+    //
+    //    tripsByEndTerminals.take(50).foreach(x => {
+    //      print(x._1)
+    //      x._2.foreach(y => {
+    //        print(" ")
+    //        print(y)
+    //      })
+    //      println
+    //    })
+    //
     val stationsInternal = stations.mapPartitions(rows => rows.map(row => {
       parseStation(row)
     }))
@@ -88,17 +89,17 @@ object Main {
       .reduceByKey((trip1, trip2) =>
         if (trip1.startDate.compareTo(trip2.startDate) < 0)
           trip1 else trip2)
-    firstGrouped2.foreach(println)
-
-    getBikeWithMaxDuration(tripsInternal)
-
-    getMaxDistBetweenStations(stationsInternal)
-
-    getBikePathWithMaxDuration(tripsInternal)
-
-    countBikes(tripsInternal)
-
-    getUsersWithMoreThan3HoursTrips(tripsInternal)
+    //    firstGrouped2.foreach(println)
+    //
+    //getBikeWithMaxDuration(tripsInternal)
+    //
+    //    getMaxDistBetweenStations(stationsInternal)
+    //
+     //   getBikePathWithMaxDuration(tripsInternal)
+    //
+    //    countBikes(tripsInternal)
+    //
+        getUsersWithMoreThan3HoursTrips(tripsInternal)
 
     sc.stop()
 
@@ -120,13 +121,12 @@ object Main {
       long = row(3).toDouble,
       dockcount = row(4).toInt,
       landmark = row(5),
-      installation = row(6),
-      notes = null
+      installation = row(6)
     )
   }
 
   def parseTrip(row: Array[String]): Trip = {
-    val timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd H:m")
+    val timeFormat = DateTimeFormatter.ofPattern("M/d/yyyy H:m")
     Trip(
       tripId = row(0).toInt,
       duration = row(1).toInt,

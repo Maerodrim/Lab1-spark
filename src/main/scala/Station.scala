@@ -1,10 +1,9 @@
 case class Station(
-                    stationId: Integer,
-                    name: String,
-                    lat: Double,
-                    long: Double,
-                    dockcount: Integer,
-                    landmark: String,
-                    installation: String,
-                    notes: String
+                    stationId: Integer, //id
+                    name: String, //name
+                    lat: Double, //lat
+                    long: Double, //long
+                    dockcount: Integer, //dock_count
+                    landmark: String, //city
+                    installation: String //installation_date
                   )
